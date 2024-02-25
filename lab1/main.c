@@ -1,10 +1,7 @@
-//
-// Created by lukasz on 25.02.2024.
-//
-
 #include <stdio.h>
+#include <stdlib.h>
 
 int main() {
-    printf("Hello, World!\n");
-    return 0;
+    system("wc t.txt > /tmp/temp_wc.txt");
+    printf("Hello World\n");
 }
