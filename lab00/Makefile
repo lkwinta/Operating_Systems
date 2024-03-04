@@ -1,6 +1,13 @@
 CC=gcc
-BUILD=build
-CFLAGS= -g -Wall
+BUILD_DIR=build
+CFLAGS= -Wall
+
+BUILD := debug
+
+cflags.common := -std=c11 -Wall
+cflags.debug := -g -O0 
+cflags.release := -O2
+CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 
 .PHONY: all countdown clean
 
@@ -8,8 +15,8 @@ all:
 	make countdown
 
 countdown: countdown.c
-	mkdir -p $(BUILD)
-	$(CC) $(CFLAGS) -o $(BUILD)/$@ $<
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
 clean:
-	rm -rf $(BUILD)
+	rm -rf $(BUILD_DIR)
