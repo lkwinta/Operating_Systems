@@ -1,6 +1,6 @@
 # C compiler command
 CC=gcc
-# defines path to put all binary filess
+# defines path to put all binary files
 BUILD_DIR=build
 
 # default build configuration, i.e `make all BUILD=release` or `make all BUILD=debug` overwrites this flag 
