@@ -17,7 +17,7 @@ cflags.release := -O2
 # build CFLAGS variable based on selected build configuration
 CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 
-.PHONY: all client_static client_shared_so client_shared_dlopen clean
+.PHONY: all client_static client_shared_so client_shared_dlopen test_static test_shared_so test_shared_dlopen clean
 
 # create all client executables
 all:
@@ -53,6 +53,16 @@ client_shared_dlopen: client_shared_dlopen.c
 	mkdir -p $(BUILD_DIR)
 	make collatz_shared -C collatzlib BUILD=$(BUILD)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -ldl
+
+# example program execution
+test_static:
+	./$(BUILD_DIR)/client_static
+
+test_shared_so:
+	./$(BUILD_DIR)/client_shared_so
+
+test_shared_dlopen:
+	./$(BUILD_DIR)/client_shared_dlopen
 
 clean:
 	rm -rf $(BUILD_DIR)
