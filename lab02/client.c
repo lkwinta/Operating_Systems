@@ -5,16 +5,14 @@
 #endif //DYNAMIC_DLOPEN
 
 #ifdef DYNAMIC_DLOPEN
-#include "dlfcn.h"
+    #include "dlfcn.h"
 
-int (*collatz_conjecture)(int input);
-int (*test_collatz_convergence)(int input, int max_iter);
+    int (*collatz_conjecture)(int input);
+    int (*test_collatz_convergence)(int input, int max_iter);
 #endif //DYNAMIC_DLOPEN
 
 int main() {
 #ifdef DYNAMIC_DLOPEN
-    
-
     void* dll_handle = dlopen("collatzlib/build/libcollatz_shared.so", RTLD_LAZY);
     if (!dll_handle) {
         fprintf(stderr, "Error: %s\n", dlerror());
