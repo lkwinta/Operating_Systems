@@ -28,7 +28,7 @@ all:
 # create client executable which uses staticly linked library
 # first compile static library if it doesn't exist
 # to link object file with static library we just need to pass path to static library (.a file) at the end of gcc command
-client_static: client_static.c
+client_static: client.c
 	mkdir -p $(BUILD_DIR)
 	make -C collatzlib collatz_static BUILD=$(BUILD)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< collatzlib/build/libcollatz_static.a
@@ -42,17 +42,17 @@ client_static: client_static.c
 # 	  -lcollatz_shared -specify library to be linked -lcollatz_shared means that linker will look for file named libcollatz_shared.so in <path> specified in -L option
 #     -Wl  - option passing arguments to linker
 # 	  -Wl,-rpath=<path>  - pass -rpath=<path> argument to linker, rpath itself is path for runtime library search, so the program knows where to look for .so file
-client_shared_so: client_shared_so.c
+client_shared_so: client.c
 	mkdir -p $(BUILD_DIR)
 	make collatz_shared -C collatzlib BUILD=$(BUILD)
 	$(CC) $(CFLAGS) -L ./collatzlib/build $< -lcollatz_shared -Wl,-rpath=./collatzlib/build -o $(BUILD_DIR)/$@ 
 
 # create client that uses dlopen for use of shared library
 # just conventional gcc build with -ldl flag to link libdl used by dlopen
-client_shared_dlopen: client_shared_dlopen.c
+client_shared_dlopen: client.c
 	mkdir -p $(BUILD_DIR)
 	make collatz_shared -C collatzlib BUILD=$(BUILD)
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -ldl
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -ldl -D DYNAMIC_DLOPEN 
 
 # example program execution
 test_static:
