@@ -49,6 +49,7 @@ client_shared_so: client.c
 
 # create client that uses dlopen for use of shared library
 # just conventional gcc build with -ldl flag to link libdl used by dlopen
+# -D flag passses define macro for the preprocessor
 client_shared_dlopen: client.c
 	mkdir -p $(BUILD_DIR)
 	make collatz_shared -C collatzlib BUILD=$(BUILD)
