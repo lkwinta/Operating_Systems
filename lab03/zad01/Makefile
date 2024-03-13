@@ -43,15 +43,15 @@ test_generator: test_generator.c
 
 # target performing functionality and performance tests
 tests:
-	make ftests REVERSE=reverse
-	make ftests REVERSE=reverse_bytes
+	make ftests REVERSE=reverse BUILD=release
+	make ftests REVERSE=reverse_bytes BUILD=release
 
 	rm -f pomiar_zad_2.txt
 	touch pomiar_zad_2.txt
 
-	make ptests REVERSE=reverse
+	make ptests REVERSE=reverse BUILD=release
 	@echo >> pomiar_zad_2.txt
-	make ptests REVERSE=reverse_bytes
+	make ptests REVERSE=reverse_bytes BUILD=release
 
 # helper target generating test files with helper generator app
 # @ used so commands are not echo'ed while make executed

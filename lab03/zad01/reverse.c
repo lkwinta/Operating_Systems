@@ -42,24 +42,24 @@ void reverse(FILE* input_file, FILE* output_file){
         fseek(input_file, -bytes_to_read, SEEK_CUR);
 
         //we read calculated amount of bytes to the buffer
-        fread(buffer, sizeof(char), bytes_to_read, input_file);
+        size_t bytes_read = fread(buffer, sizeof(char), bytes_to_read, input_file);
 
         //iterate over the buffer and reverse it contents
         char c;
-        for(int i = 0; i < bytes_to_read/2; i++){
+        for(int i = 0; i < bytes_read/2; i++){
             c = buffer[i];
-            buffer[i] = buffer[bytes_to_read - 1 - i];
-            buffer[bytes_to_read - 1 - i] = c;
+            buffer[i] = buffer[bytes_read - 1 - i];
+            buffer[bytes_read - 1 - i] = c;
         }
 
         //we write reversed buffer to the file
-        fwrite(buffer, sizeof(char), bytes_to_read, output_file);
+        fwrite(buffer, sizeof(char), bytes_read, output_file);
 
         //we can always seek BUFFER_SIZE hear, either we have read all bytes from the file 
         // or we have more than BUFFER_SIZE bytes to seek
         fseek(input_file, -BUFFER_SIZE, SEEK_CUR);
         
-        bytes_left -= bytes_to_read; //update amount of bytes left
+        bytes_left -= bytes_read; //update amount of bytes left
     }
 }
 
