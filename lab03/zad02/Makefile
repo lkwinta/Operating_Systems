@@ -33,16 +33,19 @@ gen_tests:
 	touch test_directory/file2
 	touch test_directory/file3
 	touch test_directory/file4
-	touch test_directory/file5s
+	touch test_directory/file5
 
-	echo "asdaklsdjaklsdjaklsdjlaksdkjsdfkdjngjsdfjkdasnfj" 								>> test_directory/file1
-	echo "asdadasdahfghhffhhffghfghfh" 														>> test_directory/file2
-	echo "asdajghkjghkjdffgfdhfdghhhhhhhhhhhfhgdshssssssssssssssshsfgwerwrwrewerR" 			>> test_directory/file3
-	echo "ASDADAfgsdfgdsgfsdfgsdgdsfgsdgsdgsdgsdfg" 										>> test_directory/file4
-	echo "dfsfsdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffsdfs" 	>> test_directory/file5
+	echo "asdaklsdjaklsdjaklsdjlaksdkjsdfkdjngjsdfjkdasnfj" 																		> test_directory/file1
+	echo "asdadasdahfghhffhhffghfghfh" 																								> test_directory/file2
+	echo "asdajghkjghkjdffgfdhfdghhhhhhhhhhhfhgdshssssssssssssssshsfgwerwrwrewerR" 													> test_directory/file3
+	echo "ASDADAfgsdfgdsgfsdfgsdgdsfgsdgsdgsdgsdfg" 																				> test_directory/file4
+	echo "dfsfsdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffasdddddddddddddddddddddddddddddddddddffffsdfs" 	> test_directory/file5
 
 tests: gen_tests file_sizes
+	@echo "------ Program output ------"
 	./$(BUILD_DIR)/file_sizes test_directory
+	@echo "------ wc --bytes output ------"
+	wc --bytes test_directory/*
 
 # removes all unnecesery build objects
 clean:
