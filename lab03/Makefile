@@ -16,47 +16,66 @@ cflags.debug := -g -O0
 cflags.release := -O2
 # build CFLAGS variable based on selected build configuration
 CFLAGS := ${cflags.${BUILD}} ${cflags.common}
+TIME := /usr/bin/time
 
-.PHONY: all clean
+.PHONY: all tests clean
 
-# create all client executables
-all: reverse test_generator
+# create all executables
+all: reverse reverse_bytes test_generator
 
+# create reverse executable configured to reverse files byte by byte with BYTES macro
+reverse_bytes: reverse.c
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -D BYTES
+
+# create reverse executable configured to reverse files in blocks
 reverse: reverse.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
-	
+
+# compile random file generator
 test_generator: test_generator.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
-# example program execution
-test_reverse:
-	./$(BUILD_DIR)/reverse test reversed_test
-	./$(BUILD_DIR)/reverse reversed_test reversed_test_reversed
-	diff -s test reversed_test_reversed
+# target performing functionality and performance tests
+tests:
+	make ftests REVERSE=reverse
+	make ftests REVERSE=reverse_bytes
 
-PASSED = 0
-functionality_tests: all
+	rm -f pomiar_zad_2.txt
+	touch pomiar_zad_2.txt
+
+	make ptests REVERSE=reverse
+	@echo >> pomiar_zad_2.txt
+	make ptests REVERSE=reverse_bytes
+
+# helper target generating test files with helper generator app
+# @ used so commands are not echo'ed while make executed
+gen_tests: test_generator
 	@ mkdir -p test_files
+	@ ./$(BUILD_DIR)/test_generator 512 			test_files/small_file
+	@ ./$(BUILD_DIR)/test_generator 15000 			test_files/medium_file
+	@ ./$(BUILD_DIR)/test_generator 53248 			test_files/large_file
+	@ ./$(BUILD_DIR)/test_generator 10240000 		test_files/huge_file
+
+# functionality tests, reverses multiple possible files and compares it with result of rev command on the same file
+# also @ is used to silence command echoing
+# -s in diff means that equality is considered a sucess
+ftests: $(REVERSE) gen_tests
 	@ mkdir -p test_temp
 
-	@ ./$(BUILD_DIR)/test_generator 512 		test_files/small_file
-	@ ./$(BUILD_DIR)/test_generator 1500 		test_files/medium_file
-	@ ./$(BUILD_DIR)/test_generator 5234 		test_files/large_file
-	@ ./$(BUILD_DIR)/test_generator 102400 		test_files/huge_file
+	@ ./$(BUILD_DIR)/$(REVERSE) test_files/small_file test_temp/small_file_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_temp/small_file_rev test_temp/small_file_rev_rev
 
-	@ ./$(BUILD_DIR)/reverse test_files/small_file test_temp/small_file_rev
-	@ ./$(BUILD_DIR)/reverse test_temp/small_file_rev test_temp/small_file_rev_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_files/medium_file test_temp/medium_file_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_temp/medium_file_rev test_temp/medium_file_rev_rev
 
-	@ ./$(BUILD_DIR)/reverse test_files/medium_file test_temp/medium_file_rev
-	@ ./$(BUILD_DIR)/reverse test_temp/medium_file_rev test_temp/medium_file_rev_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_files/large_file test_temp/large_file_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_temp/large_file_rev test_temp/large_file_rev_rev
 
-	@ ./$(BUILD_DIR)/reverse test_files/large_file test_temp/large_file_rev
-	@ ./$(BUILD_DIR)/reverse test_temp/large_file_rev test_temp/large_file_rev_rev
-
-	@ ./$(BUILD_DIR)/reverse test_files/huge_file test_temp/huge_file_rev
-	@ ./$(BUILD_DIR)/reverse test_temp/huge_file_rev test_temp/huge_file_rev_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_files/huge_file test_temp/huge_file_rev
+	@ ./$(BUILD_DIR)/$(REVERSE) test_temp/huge_file_rev test_temp/huge_file_rev_rev
 
 	@ diff -s test_files/small_file test_temp/small_file_rev_rev
 	@ rev test_files/small_file | diff -s test_temp/small_file_rev -
@@ -67,5 +86,15 @@ functionality_tests: all
 	@ diff -s test_files/huge_file test_temp/huge_file_rev_rev
 	@ rev test_files/huge_file | diff -s test_temp/huge_file_rev -
 
+# performance test, creates test file with time that took to reverse given file
+ptests: $(REVERSE) gen_tests
+	@ echo "PROGRAM: $(REVERSE)" >> results
+	@ echo "Small file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/small_file test_temp/small_file_rev 2>&1` "[s]">> results
+	@ echo "Medium file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/medium_file test_temp/medium_file_rev 2>&1` "[s]">> results
+	@ echo "Large file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/large_file test_temp/large_file_rev 2>&1` "[s]">> results
+	@ echo "Huge file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/huge_file test_temp/huge_file_rev 2>&1` "[s]">> results
+
+# removes all unnecesery build objects
 clean:
 	rm -rf $(BUILD_DIR) test_files test_temp
+	rm -f pomiar_zad_2.txt

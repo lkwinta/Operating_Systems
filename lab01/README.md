@@ -1,4 +1,4 @@
-# Lab 1
+# Lab 1 - Podstawy Makefile
 1. Zapoznaj się z koncepcją plików Makefile: https://www.gnu.org/software/make/manual/html_node/Introduction.html
 2. Zainstaluj/skonfiguruj IDE, w którym będziesz pracować przez resztę laboratoriów. (np. VS Code, Vim, etc.)
 3. Stwórz nowy projekt w IDE.
