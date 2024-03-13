@@ -16,7 +16,10 @@ cflags.debug := -g -O0
 cflags.release := -O2
 # build CFLAGS variable based on selected build configuration
 CFLAGS := ${cflags.${BUILD}} ${cflags.common}
+# using direct path to time binary to be able to format time output
 TIME := /usr/bin/time
+# name and path to raport file
+RAPORT := pomiar_zad_2.txt
 
 .PHONY: all tests clean
 
@@ -58,6 +61,7 @@ gen_tests: test_generator
 	@ ./$(BUILD_DIR)/test_generator 15000 			test_files/medium_file
 	@ ./$(BUILD_DIR)/test_generator 53248 			test_files/large_file
 	@ ./$(BUILD_DIR)/test_generator 10240000 		test_files/huge_file
+	@ ./$(BUILD_DIR)/test_generator 102400000 		test_files/monumental_file
 
 # functionality tests, reverses multiple possible files and compares it with result of rev command on the same file
 # also @ is used to silence command echoing
@@ -87,14 +91,16 @@ ftests: $(REVERSE) gen_tests
 	@ rev test_files/huge_file | diff -s test_temp/huge_file_rev -
 
 # performance test, creates test file with time that took to reverse given file
+# '%e' -  Elapsed real (wall clock) time used by the process, in seconds. -f formats time output
 ptests: $(REVERSE) gen_tests
-	@ echo "PROGRAM: $(REVERSE)" >> pomiar_zad_2.txt
-	@ echo "Small file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/small_file test_temp/small_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
-	@ echo "Medium file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/medium_file test_temp/medium_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
-	@ echo "Large file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/large_file test_temp/large_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
-	@ echo "Huge file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/huge_file test_temp/huge_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
+	@ echo "PROGRAM: $(REVERSE)" >> $(RAPORT)
+	@ echo "Small file time: " 		`$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/small_file 		test_temp/small_file_rev 		2>&1` "[s]" >> $(RAPORT)
+	@ echo "Medium file time: " 	`$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/medium_file 		test_temp/medium_file_rev 		2>&1` "[s]" >> $(RAPORT)
+	@ echo "Large file time: " 		`$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/large_file 		test_temp/large_file_rev 		2>&1` "[s]" >> $(RAPORT)
+	@ echo "Huge file time: " 		`$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/huge_file 		test_temp/huge_file_rev 		2>&1` "[s]" >> $(RAPORT)
+	@ echo "Monumental file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/monumental_file 	test_temp/monumental_file_rev 	2>&1` "[s]" >> $(RAPORT)
 
 # removes all unnecesery build objects
 clean:
 	rm -rf $(BUILD_DIR) test_files test_temp
-	rm -f pomiar_zad_2.txt
+	rm -f $(RAPORT)
