@@ -22,10 +22,12 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 # create all executables
 all: file_sizes
 
+# compile file_sizes program
 file_sizes: file_sizes.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< 
 
+# generate test directory with example files
 gen_tests:
 	mkdir -p test_directory
 
@@ -41,6 +43,7 @@ gen_tests:
 	echo "ASDADAfgsdfgdsgfsdfgsdgdsfgsdgsdgsdgsdfg" 																				> test_directory/file4
 	echo "dfsfsdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffasdddddddddddddddddddddddddddddddddddffffsdfs" 	> test_directory/file5
 
+# execute program 
 tests: gen_tests file_sizes
 	@echo "------ Program output ------"
 	./$(BUILD_DIR)/file_sizes test_directory
