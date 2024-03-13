@@ -88,7 +88,7 @@ ftests: $(REVERSE) gen_tests
 
 # performance test, creates test file with time that took to reverse given file
 ptests: $(REVERSE) gen_tests
-	@ echo "PROGRAM: $(REVERSE)" >> results
+	@ echo "PROGRAM: $(REVERSE)" >> pomiar_zad_2.txt
 	@ echo "Small file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/small_file test_temp/small_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
 	@ echo "Medium file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/medium_file test_temp/medium_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
 	@ echo "Large file time: " `$(TIME) -f '%e' ./$(BUILD_DIR)/$(REVERSE) test_files/large_file test_temp/large_file_rev 2>&1` "[s]">> pomiar_zad_2.txt
