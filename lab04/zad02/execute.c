@@ -36,21 +36,25 @@ int main(int argc, char** argv) {
 
         printf("child pid = %d, parent pid = %d \n", getpid(), getppid());
         printf("child's local = %d, child's global = %d \n", local, global);
-    
+
+        /* ecxecute ls command and get error code */
         int status = execl("/bin/ls", "ls", "-l", argv[1], NULL);
 
         /* exit from child with ls return code */
         exit(status);
     } 
 
+    /* wait for end of child execution and get error code */
     int status = 0;
     wait(&status);
     int child_return_status = WEXITSTATUS(status);
 
+    /* print parent process */
     printf("parent process\n");
     printf("parent pid = %d, child pid = %d \n", getpid(), pid);
     printf("Child exit code: %d \n", child_return_status);
     printf("parent's local = %d, parent's global = %d \n", local, global);
 
+    /* return child error code*/
     return child_return_status;
 }
