@@ -7,7 +7,7 @@
 
 /**
  * argv[0] - execution command - always passed as default
- * argv[1] - number of processes to spawn
+ * argv[1] - number of processes to spawns
 */
 int main(int argc, char** argv) {
      // if we didn't get 2 arguments we cannot procceed
