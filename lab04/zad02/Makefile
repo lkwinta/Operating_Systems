@@ -27,6 +27,17 @@ execute: execute.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -D BYTES
 
+# execute build library with test directory, second call will fail and return error code 2 which will crash make run
+test: execute
+	mkdir -p test_dir
+	touch test_dir/file1
+	touch test_dir/file2
+
+	./$(BUILD_DIR)/execute test_dir
+	@echo "Return code: $$?"
+	./$(BUILD_DIR)/execute asdmasdk
+	@echo "Return code: $$?"
+
 # removes all unnecesery build objects
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) test_dir
