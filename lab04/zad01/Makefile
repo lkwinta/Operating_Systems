@@ -27,6 +27,9 @@ spawn_processes: spawn_processes.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -D BYTES
 
+test: spawn_processes
+	./$(BUILD_DIR)/spawn_processes 10
+	
 # removes all unnecesery build objects
 clean:
 	rm -rf $(BUILD_DIR)
