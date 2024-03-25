@@ -20,24 +20,16 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 .PHONY: all clean
 
 # create all executables
-all: spawn_processes
+all: signal_demo
 
-# create execute executable
-execute: execute.c
+# create signal_demo executable
+signal_demo: signal_demo.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
-# execute build library with test directory, second call will fail and return error code 2 which will crash make run
-test: execute
-	mkdir -p test_dir
-	touch test_dir/file1
-	touch test_dir/file2
-
-	./$(BUILD_DIR)/execute test_dir
-	@echo "Return code: $$?"
-	./$(BUILD_DIR)/execute asdmasdk
-	@echo "Return code: $$?"
-
+test: signal_demo
+	./$(BUILD_DIR)/signal_demo
+	
 # removes all unnecesery build objects
 clean:
-	rm -rf $(BUILD_DIR) test_dir
+	rm -rf $(BUILD_DIR)

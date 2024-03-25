@@ -25,7 +25,7 @@ all: spawn_processes
 # create spawn_processes executable
 spawn_processes: spawn_processes.c
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -D BYTES
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
 test: spawn_processes
 	./$(BUILD_DIR)/spawn_processes 10
