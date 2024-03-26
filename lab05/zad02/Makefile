@@ -9,7 +9,7 @@ BUILD := debug
 # C flags common in all build configurations
 # -Wall - enable all warnings
 # -std=c11 - set c standard to 11
-cflags.common := -std=c11 -Wall 
+cflags.common := -std=c99 -Wall 
 # disable all optimizations and add debug information in debug build
 cflags.debug := -g -O0 
 # enable O2 optimization in release mode
@@ -20,7 +20,7 @@ CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 .PHONY: all clean
 
 # create all executables
-all: sender
+all: sender catcher
 
 # create sender executable
 sender: sender.c

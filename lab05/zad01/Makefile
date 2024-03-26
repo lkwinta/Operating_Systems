@@ -25,7 +25,7 @@ all: signal_demo
 # create signal_demo executable
 signal_demo: signal_demo.c
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<  -D_POSIX_C_SOURCE
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
 test: signal_demo
 	./$(BUILD_DIR)/signal_demo ignore
