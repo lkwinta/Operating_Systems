@@ -25,10 +25,14 @@ all: signal_demo
 # create signal_demo executable
 signal_demo: signal_demo.c
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<  -D_POSIX_C_SOURCE
 
 test: signal_demo
-	./$(BUILD_DIR)/signal_demo
+	./$(BUILD_DIR)/signal_demo ignore
+	./$(BUILD_DIR)/signal_demo handler
+	./$(BUILD_DIR)/signal_demo mask
+
+	./$(BUILD_DIR)/signal_demo none
 	
 # removes all unnecesery build objects
 clean:
