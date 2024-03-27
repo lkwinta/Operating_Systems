@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE 700
+#define _XOPEN_SOURCE 700 // hacky approach, might be necessary sometimes to enable sig* functions
 
 #include <stdio.h>
 #include <unistd.h>
@@ -6,32 +6,53 @@
 #include <sys/types.h>
 #include <stdlib.h>
 
+/** global variables necessary for handling different modes*/
 int status = -1;
-int status_chagnes = 0;
+int status_changes = 0;
 
+/**
+ * @brief Handler that updates current status based on argument get from signal
+ * 
+ * @param argument argument coming from signal
+*/
 void argument_handler(int argument){
-    status_chagnes++;
+    status_changes++;
     status = argument;
 }
 
-void SIGUSR1_action(int signo, siginfo_t *info, void *extra)
-{
-    int int_val = info->si_value.sival_int;
-    printf("Received value: %d pid: %d\n", int_val, info->si_pid);
+/**
+ * @brief Handler for signal action, it is called when proccess receives an signal
+ * 
+ * @param signo number of the signal that was received
+ * @param info structure holding data held by signal
+ * @param extra
+ * 
+*/
+void SIGUSR1_action(int signo, siginfo_t *info, void *extra){
+    /* Retrieve information from signal info structure */
+    int int_val = info->si_int;
+    printf("Received status: %d from pid: %d\n", int_val, info->si_pid);
 
+    /* Update current status */
+    argument_handler(int_val);
+
+    /* Send feedback signal to sender */
     kill(info->si_pid, SIGUSR1);
 }
 
 int main() {
+    /* Print out current catcher's PID*/
     printf("Catcher PID: %d\n", getpid());
 
+    /* Register new signal action */
     struct sigaction action;
-    action.sa_sigaction = SIGUSR1_action;
-    action.sa_flags = SA_SIGINFO;
-    sigemptyset(&action.sa_mask);
+    action.sa_sigaction = SIGUSR1_action;   // register callback
+    action.sa_flags = SA_SIGINFO;           // set flag to SIGINFO so handler will be called with all 3 arguments
+    sigemptyset(&action.sa_mask);           // clear all signal masks during handler
 
-    sigaction(SIGUSR1, &action, NULL);
+    sigaction(SIGUSR1, &action, NULL);      // proper registration of the signal action
 
+    /* Infinitely do tasks as in the readme. Status 3 is exit status.*/
     while(1) {
         switch(status){
             case 1:
@@ -40,9 +61,11 @@ int main() {
                 }
                 printf("\n");
                 status = -1;
+                break;
             case 2:
-                printf("So far status has changed %d times\n", status_chagnes);
+                printf("So far status has changed %d times\n", status_changes);
                 status = -1;
+                break;
             case 3:
                 printf("Received exit signal! Exiting...\n");
                 exit(0);

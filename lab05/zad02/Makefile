@@ -32,7 +32,13 @@ catcher: catcher.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
-test: sender catcher
+
+# simple starter targets
+run_sender: sender
+	./$(BUILD_DIR)/sender
+
+run_catcher: catcher
+	./$(BUILD_DIR)/catcher
 	
 	
 # removes all unnecesery build objects
