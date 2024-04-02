@@ -8,3 +8,4 @@ You can check out task contents in Polish under following links:
 3. [Lab 3 Files](lab03/README.md) - using system libraries to manage files
 4. [Lab 4 Processes](lab04/README.md) - creating and managing UNIX processes
 5. [Lab 5 Signals](lab05/README.md) - sending and handling UNIX signals
+6. [Lab 5 Pipes](lab05/README.md) - communication between processes using pipes
