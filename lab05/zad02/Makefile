@@ -34,8 +34,10 @@ catcher: catcher.c
 
 
 # simple starter targets
+PID := 0
+ARGUMENT := 1
 run_sender: sender
-	./$(BUILD_DIR)/sender
+	./$(BUILD_DIR)/sender $(PID) $(ARGUMENT)
 
 run_catcher: catcher
 	./$(BUILD_DIR)/catcher
