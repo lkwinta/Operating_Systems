@@ -7,8 +7,15 @@
 #include <stdlib.h>
 
 /** global variables necessary for handling different modes*/
-int status = -1;
-int status_changes = 0;
+/** make status volatile so it does not get optimized by compiler,
+ * without volatile it will work with -O0 but not with -O2 because compiler
+ * doesn't see the path leading to change this variable (since the handler is called by system, not explicitly by our program) so it optimizes every usage
+ * of this variable as it was constant value.
+ * 
+ * We have to tell compiler explicitly that we don't want to optimize the variable
+*/
+volatile int status = -1;
+volatile int status_changes = 0;
 
 /**
  * @brief Handler that updates current status based on argument get from signal
