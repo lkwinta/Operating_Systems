@@ -3,9 +3,11 @@
 
 typedef unsigned long long ull;
 
-const char* in_pipe_name = "int_calc_in.fifo";
-const char* out_pipe_name = "int_calc_out.fifo";
+/** name of the pipes */
+#define IN_PIPE_NAME "int_calc_in.fifo"
+#define OUT_PIPE_NAME "int_calc_out.fifo"
 
+/** struct for the data to be pushed */
 typedef struct {
     double range_start;
     double range_stop;

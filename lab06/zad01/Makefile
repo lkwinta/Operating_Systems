@@ -13,7 +13,7 @@ cflags.common := -std=c11 -Wall
 # disable all optimizations and add debug information in debug build
 cflags.debug := -g -O0 
 # enable O2 optimization in release mode
-cflags.release := -O2
+cflags.release := -Ofast
 # build CFLAGS variable based on selected build configuration
 CFLAGS := ${cflags.${BUILD}} ${cflags.common}
 # using direct path to time binary to be able to format time output
@@ -36,6 +36,8 @@ test: integral
 	@echo "2  processes " `$(TIME) -f '%e' ./$(BUILD_DIR)/integral 0.0000000001 2  2>&1`  "[s]"
 	@echo "1  process   " `$(TIME) -f '%e' ./$(BUILD_DIR)/integral 0.0000000001 1  2>&1`  "[s]"
 	
+example: integral
+	./$(BUILD_DIR)/integral 0.00001 18
 	
 # removes all unnecesery build objects
 clean:

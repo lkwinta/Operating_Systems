@@ -10,25 +10,50 @@
 int main() {
     integral_range_t range;
 
-    int input_pipe_fd = open(in_pipe_name, O_WRONLY);
-    int output_pipe_fd = open(out_pipe_name, O_RDONLY);
+
+    /**
+     * open named pipes for communication
+    */
+    int input_pipe_fd = open(IN_PIPE_NAME, O_WRONLY);
+    int output_pipe_fd = open(OUT_PIPE_NAME, O_RDONLY);
 
     double integral_result;
 
+    /**
+     * listen on std input for integral range specs and write them to the pipe, later wait for the calculated result
+    */
     while(1) {
         printf("Integral range start: \n");
-        scanf("%lf", &range.range_start);
+        if(scanf("%lf", &range.range_start) < 0) {
+            printf("Failed to read from the stdin\n");
+            return -1;
+        }
         printf("Integral range stop: \n");
-        scanf("%lf", &range.range_stop);
+        if(scanf("%lf", &range.range_stop) < 0) {
+            printf("Failed to read from the stdin\n");
+            return -1;
+        }
         printf("Integral number of intervals: \n");
-        scanf("%llu", &range.number_of_intervals);
+        if(scanf("%llu", &range.number_of_intervals) < 0) {
+            printf("Failed to read from the stdin\n");
+            return -1;
+        }
 
-        write(input_pipe_fd, &range, sizeof(range));
-        read(output_pipe_fd, &integral_result, sizeof(integral_result));
+        if(write(input_pipe_fd, &range, sizeof(range)) < 0) {
+            printf("Failed to write to the pipe\n");
+            return -1;
+        }
+        if(read(output_pipe_fd, &integral_result, sizeof(integral_result)) < 0) {
+            printf("Failed to read from the pipe\n");
+            return -1;
+        }
 
         printf("Integral result: %lf\n\n", integral_result);
     }
 
+    /**
+     * close the pipes
+    */
     close(input_pipe_fd);
     close(output_pipe_fd);
 
