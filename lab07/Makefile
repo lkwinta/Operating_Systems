@@ -16,30 +16,27 @@ cflags.debug := -g -O0
 cflags.release := -O2
 # build CFLAGS variable based on selected build configuration
 CFLAGS := ${cflags.${BUILD}} ${cflags.common}
-# using direct path to time binary to be able to format time output
-TIME := /usr/bin/time
 
 .PHONY: all clean
 
 # create all executables
-all: integral_calculator integral_manager
+all: client server
 
 # create signal_demo executable
-integral_manager: integral_manager.c
+client: client.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
-integral_calculator: integral_calculator.c
+server: server.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
-run_calculator: integral_calculator 
-	./$(BUILD_DIR)/integral_calculator
+run_client: client 
+	./$(BUILD_DIR)/client
 
-run_manager: integral_manager
-	./$(BUILD_DIR)/integral_manager
+run_server: server
+	./$(BUILD_DIR)/server
 	
 # removes all unnecesery build objects
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -rf *.fifo
