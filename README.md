@@ -9,4 +9,5 @@ You can check out task contents in Polish under following links:
 4. [Lab 4 Processes](lab04/README.md) - creating and managing UNIX processes
 5. [Lab 5 Signals](lab05/README.md) - sending and handling UNIX signals
 6. [Lab 6 Pipes](lab06/README.md) - communication between processes using pipes
-7. [Lab 7 IPC](lab07/README.md) - simple chat using inter process communication
+7. [Lab 7 IPC](lab07/README.md) - simple chat using inter process communication queues
+8. [Lab 8 IPC](lab08/README.md) - managing memory shared by multiple processes using semaphores
