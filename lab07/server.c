@@ -7,7 +7,7 @@
 
 #include "protocol_specs.h"
 
-/** signal handler to exit from loop */\
+/** signal handler to exit from loop */
 volatile bool should_close = false;
 
 void SIGNAL_handler(int signum) {
