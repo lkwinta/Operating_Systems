@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <string.h>
 
 #include "shared_memory_specs.h"
 
@@ -34,31 +35,32 @@ int main(int argc, char** argv) {
     if (memory_map == MAP_FAILED)
         perror("mmap");
 
+    memset(memory_map, 0, sizeof(memory_map_t));
+
     memory_map->number_of_printers = number_of_printers;
 
     for (int i = 0; i < number_of_printers; i++){
+        sem_init(&memory_map->printers[i].printer_semaphore, 1, 1);
 
-        memory_map->printers[i].printer_semaphore = sem_open("printer_semaphore", O_CREAT, S_IRUSR | S_IWUSR, 1);
-        if(memory_map->printers[i].printer_semaphore == SEM_FAILED)
-            perror("sem_open");
-
-        printf("Printer %d created\n", i);
-        printf("Printer semaphore: %p\n", memory_map->printers[i].printer_semaphore);
-
-        //pid_t printer_pid = fork();
-        ///if(printer_pid == 0) {
+        pid_t printer_pid = fork();
+        if(printer_pid == 0) {
             while(1) {
+                int val;
+                sem_getvalue(&memory_map->printers[i].printer_semaphore, &val);
                 if (memory_map->printers[i].printer_state == PRINTING) {
                     for (int j = 0; j < MAX_PRINTER_BUFFER_SIZE; j++) {
                         printf("%c", memory_map->printers[i].printer_buffer[j]);
+                        fflush(stdout);
                         sleep(1);
                     }
+                    printf("\n");
+                    fflush(stdout);
 
                     memory_map->printers[i].printer_state = WAITING;
-                    sem_post(memory_map->printers[i].printer_semaphore);
+                    sem_post(&memory_map->printers[i].printer_semaphore);
                 }
             }
-        //}
+        }
     }
 
     while(wait(NULL) > 0) {}

@@ -33,10 +33,10 @@ users_simulator: users_simulator.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $< -lrt -lpthread
 
 run_printers_system: printers_system 
-	./$(BUILD_DIR)/printers_system 1
+	./$(BUILD_DIR)/printers_system 5
 
 run_users_simulator: users_simulator
-	./$(BUILD_DIR)/users_simulator 2
+	./$(BUILD_DIR)/users_simulator 10
 	
 # removes all unnecesery build objects
 clean:

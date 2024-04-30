@@ -5,15 +5,16 @@
 #include <semaphore.h>
 
 #define MAX_PRINTERS 256
-#define MAX_PRINTER_BUFFER_SIZE 11
+#define MAX_PRINTER_BUFFER_SIZE 256
+#define MAX_SEMAPHORE_NAME 40
 
 typedef enum {
-    PRINTING,
-    WAITING
+    WAITING = 0,
+    PRINTING = 1
 } printer_state_t;
 
 typedef struct {
-    sem_t* printer_semaphore;
+    sem_t printer_semaphore;
     char printer_buffer[MAX_PRINTER_BUFFER_SIZE];
     printer_state_t printer_state;
 } printer_t;

@@ -43,43 +43,38 @@ int main(int argc, char** argv) {
     char user_buffer[MAX_PRINTER_BUFFER_SIZE] = {0};
 
     for (int i = 0; i < number_of_users; i++){
-        //pid_t user_pid = fork(); 
-        //if(user_pid == 0) {
+        pid_t user_pid = fork(); 
+        if(user_pid == 0) {
             while(1) {
                 generate_random_string(user_buffer, 10);
 
-                // critical section
-                int max_sem_value = INT32_MIN;
-                int max_sem_index = -1;
-
-                // for (int j = 0; j < memory_map->number_of_printers; j++) {
-                //     int sem_value;
-                //     if(sem_getvalue(memory_map->printers[j].printer_semaphore, &sem_value) < 0) {
-                //         perror("sem_getvalue");
-                //     }
-                //     if(sem_value > max_sem_value) {
-                //         max_sem_value = sem_value;
-                //         max_sem_index = j;
-                //     }
-                // }
-                
-                // if(max_sem_index == -1) {
-                //     printf("No available printers\n");
-                //     max_sem_index = rand() % memory_map->number_of_printers;
-                // }
-
-                if(sem_wait(memory_map->printers[0].printer_semaphore) < 0){
-                    perror("asdadads");
+                int printer_index = -1;
+                for (int j = 0; j < memory_map->number_of_printers; j++) {
+                    int val;
+                    sem_getvalue(&memory_map->printers[j].printer_semaphore, &val);
+                    if(val > 0) {
+                        printer_index = j;
+                        break;
+                    }
                 }
-                memcpy(memory_map->printers[0].printer_buffer, user_buffer, MAX_PRINTER_BUFFER_SIZE);
-                memory_map->printers[0].printer_state = PRINTING;
-                printf("User %d is printing on printer %d\n", i, 0);
+
+                if(printer_index == -1) {
+                    printer_index = rand() % memory_map->number_of_printers;
+                }
+
+                if(sem_wait(&memory_map->printers[printer_index].printer_semaphore) < 0){
+                    perror("sem_wait");
+                }
+                    
+                memcpy(memory_map->printers[printer_index].printer_buffer, user_buffer, MAX_PRINTER_BUFFER_SIZE);
+                memory_map->printers[printer_index].printer_state = PRINTING;
+                printf("User %d is printing on printer %d\n", i, printer_index);
 
                 sleep(rand() % 3 + 1);
-            } 
-            exit(0);
-        //}
+            }         
+        }
     }
+
 
     // wait for all children to finish
     while(wait(NULL) > 0) {};
