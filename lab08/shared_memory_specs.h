@@ -16,6 +16,7 @@ typedef enum {
 typedef struct {
     sem_t printer_semaphore;
     char printer_buffer[MAX_PRINTER_BUFFER_SIZE];
+    size_t printer_buffer_size;
     printer_state_t printer_state;
 } printer_t;
 
