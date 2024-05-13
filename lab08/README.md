@@ -6,4 +6,4 @@ System składa się z N użytkowników oraz M drukarek. Każdy z użytkowników 
 
 Każdy z N użytkowników powinien przesyłać do systemu wydruku zadanie wydruku 10 losowych znaków (od 'a' do 'z') a następnie odczekać losową liczbe sekund. Zadania zlecenia wydruku i odczekania powinny być wykonane w nieskończonej pętli. 
 
-Należy zsynchronizować prace użytkowników oraz drukarek. Należy użyć mechanizmów System V lub POSIX.
+Należy zsynchronizować prace użytkowników oraz drukarek. Należy użyć mechanizmów System V lub POSIX. 
