@@ -18,5 +18,5 @@ W procesie rodzica:
 2. wyświetl komunikat “parent pid = %d, child pid = %d”
 3. wyświetl komunikat “Child exit code: %d”
 4. wyświetl komunikat “Parent's local = %d, parent's global = %d”
-5. zwróć stosowny kod błędu.
+5. zwróć stosowny kod błędu. 
 
