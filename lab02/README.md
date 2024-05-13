@@ -32,4 +32,4 @@ Zadanie:
     Jako biblioteka ładowana dynamicznie
     Dla każdego z wariantów utwórz odpowiedni wpis w Makefile. Do realizacji biblioteki dynamicznej użyj definicji stałej (-D) i dyrektywy preprocesora, aby zmodyfikować sposób działania klienta.
 
-4. Wyświetl zawartość plików binarnych wszystkich wariantów klienta przy pomocy programu objdump, znajdź miejsca wywołania funkcji test_collatz_convergence omów różnice w kodzie binarnym. Dla większej jasności kodu kompiluj bez optymalizacji -O0.
+4. Wyświetl zawartość plików binarnych wszystkich wariantów klienta przy pomocy programu objdump, znajdź miejsca wywołania funkcji test_collatz_convergence omów różnice w kodzie binarnym. Dla większej jasności kodu kompiluj bez optymalizacji -O0. 
