@@ -69,14 +69,18 @@ int main(int argc, char** argv) {
         signal(sig, SIGNAL_handler);
     }
 
+
+    int seed = 0;
     // spawn users
     for (int i = 0; i < number_of_users; i++){
+        seed += 10;
         pid_t user_pid = fork(); 
         if (user_pid < 0) { /* Failed to spawn all users */
             perror("fork");
             return -1;
         }
         else if(user_pid == 0) {
+            srand(seed);
             /* Try to dispatch data to the printers in random manner */
             while(!should_close) {
                 /* Generate random message */
