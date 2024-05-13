@@ -29,13 +29,6 @@ life: grid.c life.c
 
 run_life: life
 	./$(BUILD_DIR)/life
-
-test: test.c
-	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) test.c -o $(BUILD_DIR)/test -lpthread -lm
-
-run_test: test
-	./$(BUILD_DIR)/test
 	
 # removes all unnecesery build objects
 clean:
