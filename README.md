@@ -11,3 +11,5 @@ You can check out task contents in Polish under following links:
 6. [Lab 6 Pipes](lab06/README.md) - communication between processes using pipes
 7. [Lab 7 IPC](lab07/README.md) - simple chat using inter process communication queues
 8. [Lab 8 IPC](lab08/README.md) - managing memory shared by multiple processes using semaphores
+9. [Lab 9 Threads](lab09/README.md) - using threads library to optimize Conway's Game of Live
+10. [Lab 10 Thread synchronization](lab10/README.md) - mechanisms for thread synchronization to solver Santa Clause problem
