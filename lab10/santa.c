@@ -39,9 +39,9 @@ pthread_t reindeers_threads[9];
  * 
  * @return NULL
 */
-void* reindeer_thread(void* arg){
-    // cast argument to int
-    int id = (int)arg;
+void* reindeer_thread_handler(void* arg){
+    // dereference argument pointer to get reindeer id
+    int id = *(int*)arg;
     // set cancel type to asynchronous to be able to cancel thread immediately
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
@@ -77,7 +77,7 @@ void* reindeer_thread(void* arg){
     return NULL;
 }
 
-void* santa_thread(void* arg) {
+void* santa_thread_handler(void* arg) {
     // cycle 4 times to deliver toys
     for (int i = 0; i < 4; i++) {
         // wait for reindeers to wake up santa
@@ -105,10 +105,12 @@ void* santa_thread(void* arg) {
 }
 
 int main() {
+    int ids[9];
     // create santa and reindeer threads
-    pthread_create(&santa_thread, NULL, santa_thread, NULL);
+    pthread_create(&santa_thread, NULL, santa_thread_handler, NULL);
     for (int i = 0; i < 9; i++) {
-        pthread_create(&reindeers_threads[i], NULL, reindeer_thread, (void*)i);
+        ids[i] = i;
+        pthread_create(&reindeers_threads[i], NULL, reindeer_thread_handler, &ids[i]);
     }
 
     // wait for santa and reindeer threads to finish
@@ -116,7 +118,7 @@ int main() {
     for (int i = 0; i < 9; i++) {
         pthread_join(reindeers_threads[i], NULL);
     }
-    
+
     printf("Koniec\n");
 
     return 0;
