@@ -16,4 +16,4 @@ https://sourceware.org/gdb/current/onlinedocs/gdb.html/ <br>
 https://sourceware.org/gdb/current/onlinedocs/gdb.html/Sample-Session.html#Sample-Session <br>
 https://lldb.llvm.org/use/tutorial.html <br>
 8. Skonfiguruj swoje IDE do współpracy z Makefile. Postaw breakpoint (graficznie, klikając) w środku pętli. Uruchom program w trybie Debug i zademonstruj, jak można podejrzeć wartość indeksu pętli i kontynuować wykonywanie programu.
-9. Usuń breakpoint i kontnynuuj wykonywanie programu do końca.
+9. Usuń breakpoint i kontnynuuj wykonywanie programu do końca. 
