@@ -73,6 +73,7 @@ int main()
 	char *background = create_grid();
 	char *tmp;
 
+	/* Declare arrays to hold threads and thread arguments */
 	pthread_t threads[THREAD_COUNT];
 	thread_args_t args[THREAD_COUNT];
 
