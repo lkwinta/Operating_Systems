@@ -3,7 +3,7 @@ Napisz współbieżną wersję gry w życie, gdzie obliczanie stanu planszy jest
 
 Każdy z utworzonych wątków powinien obliczać stan komórek, za które jest odpowiedzialny w następnym kroku czasowym. Wątek główny powinien zajmować się tylko zlecaniem prac i wyświetlaniem wyników. Wątki powinny być tworzone tylko raz na początku programu i powinny wykonywać swoją pracę raz na iterację. (sugestia rozwiązania: `pause()` i `pthread_kill()`)
 
-Do skompilowania gry potrzebna jest biblioteka ncurses. W niektórych dystrybucjach Linux-a trzeba zainstalować nagłówki tej biblioteki. Np.: `apt install ncurses-devel`.
+Do skompilowania gry potrzebna jest biblioteka ncurses. W niektórych dystrybucjach Linux-a trzeba zainstalować nagłówki tej biblioteki. Np.: `apt install libncurses-dev`.
 
 Gra wykorzystuje dwie tablice dla obecnego i następnego kroku czasowego. Każdy wątek zapisuje dane tylko do swoich komórek tablicy następnego kroku, a zatem dostęp do tych tablic nie musi być synchronizowany. 
 

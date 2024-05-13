@@ -25,10 +25,17 @@ all: life
 # create executables
 life: grid.c life.c
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) grid.c life.c -o $(BUILD_DIR)/life -lncursesw -lpthread
+	$(CC) $(CFLAGS) grid.c life.c -o $(BUILD_DIR)/life -lncursesw -lpthread -lm
 
 run_life: life
 	./$(BUILD_DIR)/life
+
+test: test.c
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) test.c -o $(BUILD_DIR)/test -lpthread -lm
+
+run_test: test
+	./$(BUILD_DIR)/test
 	
 # removes all unnecesery build objects
 clean:
