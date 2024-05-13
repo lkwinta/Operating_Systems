@@ -7,4 +7,4 @@ Do skompilowania gry potrzebna jest biblioteka ncurses. W niektórych dystrybucj
 
 Gra wykorzystuje dwie tablice dla obecnego i następnego kroku czasowego. Każdy wątek zapisuje dane tylko do swoich komórek tablicy następnego kroku, a zatem dostęp do tych tablic nie musi być synchronizowany. 
 
-Pomiędzy wyświetleniami planszy program czeka 0,5 sekundy na wykonanie obliczeń. W tym zadaniu ignorujemy możliwość wystąpienia sytuacji, gdzie jakiś wątek nie zdążył wykonać obliczeń w wyznaczonym czasie, tj. żadna dodatkowa synchronizacja wątków nie jest wymagana. 
+Pomiędzy wyświetleniami planszy program czeka 0,5 sekundy na wykonanie obliczeń. W tym zadaniu ignorujemy możliwość wystąpienia sytuacji, gdzie jakiś wątek nie zdążył wykonać obliczeń w wyznaczonym czasie, tj. żadna dodatkowa synchronizacja wątków nie jest wymagana.  
