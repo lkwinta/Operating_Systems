@@ -6,6 +6,8 @@
 #include <arpa/inet.h>
 #include <sys/types.h> 
 #include <unistd.h> 
+#include <string.h>
+#include <stdbool.h>
 
 #include "protocol_specs.h"
 
@@ -24,7 +26,7 @@ int main(int argc, char** argv) {
         .sin_family = AF_INET
     };
     
-    int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 
     int t = 1;
     setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &t, sizeof(int));
@@ -39,21 +41,18 @@ int main(int argc, char** argv) {
         clients_fd_array[i] = -1;
 
 
-    pid_t acceptloop_pid = fork();
-    if (acceptloop_pid < 0)
-        perror("fork");
-    else if (acceptloop_pid == 0) {
-        while (1) {
-            int client_fd;
-            if((client_fd = accept(socket_fd, NULL, 0)) < 0)
-                perror("accept");
+    bool clients_id_set[MAX_CLIENTS] = {0};
+    char clients_id_array[MAX_CLIENTS][MAX_CLIENT_ID_LEN] = {0};
 
+    while (1) {
+        int client_fd;
+        if((client_fd = accept(socket_fd, NULL, 0)) > 0) {
             int i = 0;
             while (i < MAX_CLIENTS){
                 if (clients_fd_array[i] == -1) {
                     clients_fd_array[i] = client_fd;
-                    printf("Client accepted\n");
-                    printf("Client_fd: %d %d \n", i, client_fd);
+
+                    printf("Client accepted at index: %d\n", i);
                     break;
                 }
 
@@ -62,33 +61,57 @@ int main(int argc, char** argv) {
 
             if (i == MAX_CLIENTS)
                 printf("Client limit reached\n");
-        }  
-    } else {
-         while (1) {
-            for (int i = 0; i < MAX_CLIENTS; i++) {
-                if (clients_fd_array[i] == -1)
-                    continue;
 
-                printf("trying\n");
+        }
+           
+        for (int i = 0; i < MAX_CLIENTS; i++) {
+            if (clients_fd_array[i] == -1)
+                continue;
 
-                request_message_t message;
-                int a = recv(clients_fd_array[i], &message, sizeof(message), MSG_DONTWAIT);
-                if(a > 0) {
-                    printf("received");
-                    switch(message.request_type) {
-                        case TOALL:
-                            printf("TO_ALL: %s FROM: %s\n", message.payload.to_all, message.sender_client_id);
-                            break;
-                        
-                        case TOONE:
-                            printf("TO_ONE: %s %s FROM: %s \n", message.payload.to_one.target_client_id, message.payload.to_one.message, message.sender_client_id);
-                            break;
+            request_message_t message;
+            if(recv(clients_fd_array[i], &message, sizeof(message), MSG_DONTWAIT) > 0) {
+                switch(message.request_type) {
+                    case TOALL:
+                        printf("TO_ALL: %s FROM: %s \n", message.payload.to_all, message.sender_client_id);
+                        for (int j = 0; j < MAX_CLIENTS; j++)
+                            if (clients_fd_array[j] != -1 && i != j)
+                                send(clients_fd_array[j], &message, sizeof(message), MSG_DONTWAIT);
+                        break;
+                    
+                    case TOONE:
+                        printf("TO_ONE: %s %s FROM: %s \n", message.payload.to_one.target_client_id, message.payload.to_one.message, message.sender_client_id);
+                        for (int i = 0; i < MAX_CLIENTS; i++)
+                            if (clients_fd_array[i] != -1 && strncmp(clients_id_array[i], message.payload.to_one.target_client_id, MAX_CLIENT_ID_LEN) == 0)
+                                send(clients_fd_array[i], &message, sizeof(message), MSG_DONTWAIT);
+                        break;
 
-                        case LIST:
-                            printf("LIST FROM: %s", message.sender_client_id);
-                            break;
-                    }
+                    case LIST:
+                        printf("LIST FROM: %s\n", message.sender_client_id);
+                        int length = 0;
+                        for (int j = 0; j < MAX_CLIENTS; j++)
+                            if (clients_fd_array[j] != -1){
+                                length++;
+                                strncpy(message.payload.list.identifiers_list[j], clients_id_array[j], MAX_CLIENT_ID_LEN);
+                            }
+                        message.payload.list.list_length = length;
+
+                        send(clients_fd_array[i], &message, sizeof(message), MSG_DONTWAIT);
+                        break;
+
+                    case ALIVE:
+                        printf("ALIVE FROM: %s\n", message.sender_client_id);
+                        if (!clients_id_set[i])
+                            strncpy(clients_id_array[i], message.sender_client_id, MAX_CLIENT_ID_LEN);
+                        break;
+
+                    case STOP:
+                        printf("STOP FROM: %s\n", message.sender_client_id);
+                        clients_fd_array[i] = -1;
+                        clients_id_set[i] = false;
+                        break;
                 }
+
+                fflush(stdout);
             }
         }
     }

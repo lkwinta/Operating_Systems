@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h> 
 #include <unistd.h> 
+#include <string.h>
 
 #include "protocol_specs.h"
 
@@ -37,8 +38,14 @@ int main(int argc, char** argv) {
     
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if(connect(socket_fd, &addr, sizeof(addr)) < 0)
+    if(connect(socket_fd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
         perror("connect");
+
+    request_message_t alive_message = {
+        .request_type = ALIVE
+    };
+    strncpy(alive_message.sender_client_id, client_identifier, MAX_CLIENT_ID_LEN);
+    send(socket_fd, &alive_message, sizeof(alive_message), MSG_DONTWAIT);
 
     pid_t listener_pid = fork();
     if (listener_pid < 0)
@@ -48,7 +55,23 @@ int main(int argc, char** argv) {
             request_message_t message;
             recv(socket_fd, &message, sizeof(message), MSG_WAITALL);
             switch(message.request_type) {
-
+                case LIST:
+                    for (int i = 0; i < message.payload.list.list_length; i++) {
+                        printf("%s\n", message.payload.list.identifiers_list[i]);
+                    }
+                    break;
+                case TOALL:
+                    printf("TOALL FROM: %s: %s\n", message.sender_client_id, message.payload.to_all);
+                    break;
+                case TOONE:
+                    printf("TOONE FROM: %s: %s\n", message.sender_client_id, message.payload.to_one.message);
+                    break;
+                case ALIVE:
+                    send(socket_fd, &alive_message, sizeof(alive_message), MSG_DONTWAIT);
+                    break;
+                default:
+                    printf("Invalid response type! \n");
+                    break;
             }
         }
     } else {
@@ -56,21 +79,21 @@ int main(int argc, char** argv) {
         while (!should_close) {
             if(scanf("%ms", &request_type_input_buffer) == 1) {
                 request_message_t message;
-                memcpy(message.sender_client_id, client_identifier, strlen(client_identifier));
+                strncpy(message.sender_client_id, client_identifier, MAX_CLIENT_ID_LEN);
 
-                if (strcmp(request_type_input_buffer, "LIST") == 0){
+                if (strncmp(request_type_input_buffer, "LIST", 4) == 0){
                     message.request_type = LIST;
 
                     if(send(socket_fd, &message, sizeof(message), MSG_DONTWAIT) < 0)
                         printf("err sendd");
-                } else if (strcmp(request_type_input_buffer, "2ALL") == 0) {
+                } else if (strncmp(request_type_input_buffer, "2ALL", 4) == 0) {
                     message.request_type = TOALL;
-                    scanf("%s", &message.payload.to_all);
+                    scanf("%s", message.payload.to_all);
                     send(socket_fd, &message, sizeof(message), MSG_DONTWAIT);
-                } else if (strcmp(request_type_input_buffer, "2ONE") == 0) {
+                } else if (strncmp(request_type_input_buffer, "2ONE", 4) == 0) {
                     message.request_type = TOONE;
-                    scanf("%s", &message.payload.to_one.target_client_id);
-                    scanf("%s", &message.payload.to_one.message);
+                    scanf("%s", message.payload.to_one.target_client_id);
+                    scanf("%s", message.payload.to_one.message);
                     send(socket_fd, &message, sizeof(message), MSG_DONTWAIT);
                 } else {
                     printf("Invalid request type! \n");
@@ -81,7 +104,15 @@ int main(int argc, char** argv) {
                 perror("scanf input");
             
         }
+
+        request_message_t stop_message = {
+            .request_type = STOP
+        };
+        strncpy(stop_message.sender_client_id, client_identifier, MAX_CLIENT_ID_LEN);
+        send(socket_fd, &stop_message, sizeof(stop_message), MSG_DONTWAIT);
     }
+
+    close(socket_fd);
   
     return 0;
 }

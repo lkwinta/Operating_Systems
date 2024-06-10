@@ -22,7 +22,10 @@ typedef struct {
             char message[MAX_MESSAGE_STRING_LEN];
         } to_one;
         char to_all[MAX_MESSAGE_STRING_LEN];
-        char list[MAX_CLIENTS][MAX_CLIENT_ID_LEN];
+        struct {
+            char identifiers_list[MAX_CLIENTS][MAX_CLIENT_ID_LEN];
+            int list_length;
+        } list;
     } payload;
 } request_message_t;
 

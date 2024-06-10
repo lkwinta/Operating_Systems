@@ -28,7 +28,6 @@ client: client.c
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
 server: server.c
-	rm -rf /dev/mqueue/*
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$@ $<
 
