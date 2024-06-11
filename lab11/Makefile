@@ -39,5 +39,4 @@ run_server: server
 	
 # removes all unnecesery build objects
 clean:
-	rm -f /dev/mqueue/*
 	rm -rf $(BUILD_DIR)
