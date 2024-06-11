@@ -8,14 +8,24 @@
 #include <unistd.h> 
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
+#include <signal.h>
 
 #include "protocol_specs.h"
+
+volatile bool should_close = false;
+
+void sigint_handler(int signo) {   
+    should_close = true;
+}
 
 int main(int argc, char** argv) {
     if (argc < 3) {
         printf("Usage: %s <ip> <port>\n", argv[0]);
         return -1;
     }
+
+    signal(SIGINT, sigint_handler);
 
     uint32_t ip_address = inet_addr(argv[1]);
     uint16_t port = (uint16_t)strtol(argv[2], NULL, 10);
@@ -43,14 +53,18 @@ int main(int argc, char** argv) {
 
     bool clients_id_set[MAX_CLIENTS] = {0};
     char clients_id_array[MAX_CLIENTS][MAX_CLIENT_ID_LEN] = {0};
+    clock_t clients_alive_timeout[MAX_CLIENTS];
 
-    while (1) {
+    clock_t ping_time = clock();
+
+    while (!should_close) {
         int client_fd;
         if((client_fd = accept(socket_fd, NULL, 0)) > 0) {
             int i = 0;
             while (i < MAX_CLIENTS){
                 if (clients_fd_array[i] == -1) {
                     clients_fd_array[i] = client_fd;
+                    clients_alive_timeout[i] = clock();
 
                     printf("Client accepted at index: %d\n", i);
                     break;
@@ -100,6 +114,7 @@ int main(int argc, char** argv) {
 
                     case ALIVE:
                         printf("ALIVE FROM: %s\n", message.sender_client_id);
+                        clients_alive_timeout[i] = clock();
                         if (!clients_id_set[i])
                             strncpy(clients_id_array[i], message.sender_client_id, MAX_CLIENT_ID_LEN);
                         break;
@@ -114,7 +129,29 @@ int main(int argc, char** argv) {
                 fflush(stdout);
             }
         }
+
+        if ((clock() - ping_time) / CLOCKS_PER_SEC > 1) {
+            request_message_t alive_message = {
+                .request_type = ALIVE
+            };
+            for (int i = 0; i < MAX_CLIENTS; i++)
+                if (clients_fd_array[i] != -1)
+                    send(clients_fd_array[i], &alive_message, sizeof(alive_message), MSG_DONTWAIT);
+            ping_time = clock();
+        }
+
+        for (int i = 0; i < MAX_CLIENTS; i++)
+            if (clients_fd_array[i] != -1 && (clock() - clients_alive_timeout[i]) / CLOCKS_PER_SEC > 5) {
+                printf("Client %s timed out\n", clients_id_array[i]);
+                close(clients_fd_array[i]);
+                clients_fd_array[i] = -1;
+                clients_id_set[i] = false;
+            }
     }
+
+    for (int i = 0; i < MAX_CLIENTS; i++)
+        if (clients_fd_array[i] != -1)
+            close(clients_fd_array[i]);
    
     return 0;
 }
