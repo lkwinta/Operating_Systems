@@ -1,4 +1,4 @@
-# Prosty chat
+# Prosty chat z wykorzystaniem TCP/IP
 
 Napisz prosty chat typu klient-serwer w którym komunikacja pomiędzy uczestmnikami czatu / klientami / klientami i serwerem realizoiwana jest za pośrednictwem socketów z życiem protokołu strumieniowego.
 

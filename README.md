@@ -13,3 +13,5 @@ You can check out task contents in Polish under following links:
 8. [Lab 8 IPC](lab08/README.md) - managing memory shared by multiple processes using semaphores
 9. [Lab 9 Threads](lab09/README.md) - using threads library to optimize Conway's Game of Life
 10. [Lab 10 Thread synchronization](lab10/README.md) - mechanisms for thread synchronization to solver Santa Clause problem
+11. [Lab 11 TCP-IP Sockets](lab11/README.md) - create simple chat based on TCP/IP sockets
+12. [LAB 12 UDP Sockets](lab12/README.md) - create simple chat based on UDP sockets
